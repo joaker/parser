@@ -79,8 +79,8 @@ describe('labeler', function(){
   });
 
   it('should label the columns', function() {
-    const label = labeler(columnLabels);
-    const labelResult = label(separated.keys);
+    const transform = labeler(columnLabels);
+    const labelResult = transform(separated.firstLine);
     expect(labelResult).to.deep.equal(labledValues);
   });
 

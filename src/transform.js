@@ -13,12 +13,14 @@ export const separator = (delim = defaultDelimiter) => input => {
 export const convertType = arg => input => {/* TODO implement */};
 
 // zip two arrays into an object
-export const labeler = (labels = columnLabels) => values => labels.reduce((mapping, label, index) => {
-  const value = values[index];
-  mapping[label] = value;
-  return mapping;
-}, {});
-
+export const labeler = (casedLabels = columnLabels) => {
+  const labels = casedLabels.map(l => l.toLowerCase());
+  return values => labels.reduce((mapping, label, index) => {
+    const value = values[index];
+    mapping[label] = value;
+    return mapping;
+  }, {});
+}
 export const composeTransforms = (...transforms) => input => {
   const result = transforms.reduce((state, change) => {
     return change(state);
