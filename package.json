@@ -1,0 +1,19 @@
+{
+  "name": "parser",
+  "version": "1.0.0",
+  "description": "Parse pipe, comma, or space delimited inputs",
+  "main": "index.js",
+  "scripts": {
+    "start": "",
+    "test": ""
+  },
+  "keywords": [
+    "parse",
+    "delimiter",
+    "comma",
+    "pipe",
+    "space"
+  ],
+  "author": "Jack Ofnotrade <jooakley@gmail.com> (http://github.com/joaker)",
+  "license": "ISC"
+}
