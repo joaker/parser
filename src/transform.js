@@ -1,4 +1,9 @@
-import {defaultDelimiter, delimiters, columnTypes, columnLabels} from './constants';
+import {
+  defaultDelimiter,
+  delimiters,
+  columnTypes,
+  columnLabels
+} from './constants';
 
 export const separator = (delim = defaultDelimiter) => input => {
   if(!input) return [];
@@ -6,7 +11,11 @@ export const separator = (delim = defaultDelimiter) => input => {
   return parts;
 };
 export const convertType = arg => input => {/* TODO implement */};
-export const labeler = arg => input => {/* TODO implement */};
+export const labeler = (labels = columnLabels) => values => labels.reduce((mapping, label, index) => {
+  const value = values[index];
+  mapping[label] = value;
+  return mapping;
+}, {});
 
 export const composeTransforms = (...transforms) => input => {
   const result = transforms.reduce((state, change) => {
