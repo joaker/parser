@@ -1,44 +1,28 @@
-import * as parser from '../src';
+import {parse, detect} from '../src';
 import expectedData from "./files/data.json";
 import expect from 'chai';
 
-const dataFile = ''
-
-describe('parser', function(){
-  it('should parse a comma-delimited csv', function() {
+describe('parse', function(){
+  it('should parse a comma-delimited csv into an array', function() {
     const delimiter = ',';
-    const fileToParse = './files/commas';
-    const readPromise = parser.parse(fileToParse, {delimiter, output: 'test-comma-csv.json'});
-    return readPromise.then((actualData) => {
-      expect(expectedData).to.deep.equal(jsonData);
+    const fileToParse = './files/commas.csv';
+    const parses = parse(fileToParse, );
+    return parses.then((result) => {
+      expect(result).to.deep.equal(expectedData);
     });
   });
-  it('should parse a pipe-delimited csv', function() {
+  it('should parse a pipe-delimited csv into an array', function() {
     const delimiter = '|';
-    const fileToParse = './files/commas';
-    const readPromise = parser.parse(fileToParse, {delimiter,});
+    const fileToParse = './files/pipes.csv into an array';
+    const readPromise = parse(fileToParse, );
     return readPromise.then((actualData) => {
-      expect(expectedData).to.deep.equal(jsonData);
+      expect().to.deep.equal(expectedData);
     });
   });
-  it('should detect a space-delimited csv', function() {
+  it('should parse a space-delimited csv into an array', function() {
     const delimiter = ' ';
-    const fileToParse = './files/commas';
-    const readPromise = parser.parse(fileToParse, {delimiter,});
-    return readPromise.then((actualData) => {
-      expect(expectedData).to.deep.equal(jsonData);
-    });
-  });
-});
-describe('delimiter detector', function(){
-  it('detects pipe csv', function() {
-    const fileToParse = './files/commas';
-    const maxRowScan = 10;
-    const candidates = [',', ' ', '|'];
-    const readPromise = parser.detect(fileToParse, {
-      maxRowScan,
-      candidates,
-    });
+    const fileToParse = './files/spaces.csv';
+    const readPromise = parse(fileToParse, );
     return readPromise.then((actualData) => {
       expect(expectedData).to.deep.equal(jsonData);
     });

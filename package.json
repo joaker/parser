@@ -4,7 +4,7 @@
   "description": "Parse pipe, comma, or space delimited inputs",
   "main": "dist/index.js",
   "scripts": {
-    "start": "",
+    "start": "npm run parse",
     "build": "./node_modules/.bin/webpack",
     "test": "NODE_ENV=test ./node_modules/.bin/mocha --compilers js:babel-register --recursive"
   },
