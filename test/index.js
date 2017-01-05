@@ -1,5 +1,5 @@
 import {parse, detect} from '../src';
-import expectedData from "./files/data.json";
+import expectedData from "./files/short/data.json";
 import {expect} from 'chai';
 import path from 'path';
 

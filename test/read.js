@@ -1,5 +1,5 @@
 import {read} from '../src/read';
-import expectedData from "./files/data.json";
+import expectedData from "./files/short/data.json";
 import {expect} from 'chai';
 import path from 'path';
 
@@ -30,7 +30,7 @@ describe('read', function(){
     const readPromise = read(fileToRead, transformer);
     return readPromise.then((readCount) => {
       const expectedFirstUnparsed = "Last|First|Gender|FavoriteColor|DateOfBirth";
-      const expectedSecondUnparsed = "Cruz|Heather|male|green|01/01/2017
+      const expectedSecondUnparsed = "Cruz|Heather|male|green|01/01/2017";
       const expectedLineCount = 101;
       expect(target.length).to.equal(expectedLineCount);
       expect(target[0]).to.equal(expectedFirstUnparsed);
