@@ -11,6 +11,8 @@ export const separator = (delim = defaultDelimiter) => input => {
   return parts;
 };
 export const convertType = arg => input => {/* TODO implement */};
+
+// zip two arrays into an object
 export const labeler = (labels = columnLabels) => values => labels.reduce((mapping, label, index) => {
   const value = values[index];
   mapping[label] = value;
