@@ -9,7 +9,7 @@ export const parse = (filename, {
   const rows = [];
   const onRecord = row => rows.push(row);
   const reads = read(filename, onRecord, )
-  return reads.then(return rows);
+  return reads.then((lineCount) => rows);
 };
 
 export default parse;
