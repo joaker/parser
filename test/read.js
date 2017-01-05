@@ -3,6 +3,8 @@ import expectedData from "./files/data.json";
 import {expect} from 'chai';
 import path from 'path';
 
+const fileDir = "files/short";
+
 describe('read', function(){
   it('should throw when file does not exist', function() {
     const fileToRead = path.join(__dirname, 'fake/file');
@@ -14,7 +16,7 @@ describe('read', function(){
 
   it('should read 101 lines', function() {
     const expectedReadCount = 101;
-    const fileToRead = path.join(__dirname, 'files/pipes.csv')
+    const fileToRead = path.join(__dirname, fileDir, 'pipes.csv')
     const readPromise = read(fileToRead);
     return readPromise.then((readCount) => {
       expect(readCount).to.deep.equal(expectedReadCount);
@@ -24,7 +26,7 @@ describe('read', function(){
 
     const target = [];
     const transformer = line => target.push(line);
-    const fileToRead = path.join(__dirname, 'files/pipes.csv');
+    const fileToRead = path.join(__dirname, fileDir, 'pipes.csv');
     const readPromise = read(fileToRead, transformer);
     return readPromise.then((readCount) => {
       const expectedFirstUnparsed = "Last|First|Gender|FavoriteColor|DateOfBirth";
