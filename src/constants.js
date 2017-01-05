@@ -1,4 +1,4 @@
-export const delimiters = ['|', ',', ' '];
+export const delimiters = [',', '|', ' '];
 export const defaultDelimiter = delimiters[0];
 
 export const columnTypes = {

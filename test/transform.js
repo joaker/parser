@@ -1,4 +1,4 @@
-import {separator, convertType, labeler, composeTransforms, lineToPerson} from '../src/transform';
+import {separator, convertType, labeler, composeTransforms, toPerson} from '../src/transform';
 import {columnTypes, columnLabels} from '../src/constants';
 import {expect} from 'chai';
 import path from 'path';
@@ -104,7 +104,7 @@ describe('composeTransforms', function(){
 
 
 
-describe('lineToPerson', function(){
+describe('toPerson', function(){
   it('should transform a line into person data ', function() {
     const transform = composeTransforms(separator(), labeler(), convertType());
     const typedAndLabeled = transform(data.comma.firstLine);

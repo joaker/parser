@@ -1,14 +1,15 @@
-import read from './read'
+import {read} from './read'
 import {delimiters, defaultDelimiter} from './constants';
-import {composeTransforms} from './transform';
+import {toPerson} from './transform';
 
-export const parse = (filename, {
-  delimiter = defaultDelimiter,
-}) => {
-  const transform = composeTransforms(delimiter);
+export const parse = (filename, options = {}) => {
+  const {
+    delimiter = defaultDelimiter,
+  } = options;
+  const transform = toPerson(delimiter);
   const rows = [];
   const onRecord = row => rows.push(row);
-  const reads = read(filename, onRecord, )
+  const reads = read(filename, onRecord, transform);
   return reads.then((lineCount) => rows);
 };
 

@@ -1,4 +1,4 @@
-import {defaultDelimiter, delimiters, columnTypes, columnLabels} = './constants';
+import {defaultDelimiter, delimiters, columnTypes, columnLabels} from './constants';
 
 export const separator = (delim = defaultDelimiter) => input => {
   if(!input) return [];
@@ -7,5 +7,18 @@ export const separator = (delim = defaultDelimiter) => input => {
 };
 export const convertType = arg => input => {/* TODO implement */};
 export const labeler = arg => input => {/* TODO implement */};
-export const composeTransforms = arg => input => {/* TODO implement */};
-export const lineToPerson = arg => input => {/* TODO implement */};
+
+export const composeTransforms = (...transforms) => input => {
+  const result = transforms.reduce((state, change) => {
+    return change(state);
+  }, input);
+  return result;
+};
+
+export const toPerson = (delim = defaultDelimiter) => composeTransforms(
+  separator(delim),
+  labeler(),
+  composeTransforms()
+);
+
+export default toPerson;
