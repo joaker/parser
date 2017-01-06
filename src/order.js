@@ -1,15 +1,41 @@
 import {defaultOrder} from './constants';
 
-export const direct = (a,b) => a-b;
-export const alpha = (a, b) => a.toLowerCase().localeCompare(b.toLowerCase());
+export const direct = (a,b) => {
+  const diff = a-b;
+  return diff;
+};
+export const alpha = (a, b) => {
+  const diff = a.toLowerCase().localeCompare(b.toLowerCase());
+  return diff;
+};
 
 const orderers = {
-  date: direct,
+  dateofbirth: direct,
   default: alpha,
-}
+};
 
-const order = (uncasedLabel = defaultOrder) => {
+const unpack = prop => inner => {
+  return function sorter(a, b) {
+    const result = inner(a[prop], b[prop]);
+    return result;
+  };
+};
+export const order = (uncasedLabel = defaultOrder, {descending = false}) => {
   const label = uncasedLabel.toLowerCase();
-  const orderer = orderers[label];
-  return rows => rows.sort(orderer);
+  const baseOrderer = orderers[label] || orderers.default;
+  const orderer = unpack(label)(baseOrderer);
+
+  return rows => {
+    try{
+      rows.sort(orderer);
+      if(descending) {
+        rows.reverse();
+      }
+      return rows;
+    }catch(e) {
+      console.log('error:', e.message, e, e.stack);
+      console.log('ordering function:', orderer);
+      throw e;
+    }
+  };
 };

@@ -46,6 +46,7 @@ export const composeTransforms = (...transforms) => input => {
 export const toPerson = (delim = defaultDelimiter) => composeTransforms(
   separator(delim),
   labeler(),
+  convertType(),
   composeTransforms()
 );
 

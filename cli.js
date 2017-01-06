@@ -40,24 +40,13 @@ args.createOption(["-s", "--skip-count"], {
 });
 
 args.createOption(["-o", "--order"], {
-    // All options are optional
-
-    // Implies hasValue: true, which allows parser to read -p2345 as -p=2345
     defaultValue: 'last',
-
     validators: [createEnumerableValidator(columnLabels)],
-
-    // // Both built-in and custom validations supported,
-    // // synchronous as well as asynchronous (promise based)
-    // validators: [v.string("Custom message. ${1} must be a number.")],
-
-    // // Transforms allow you to get more intelligent values
-    // // than raw strings back
-    // transform: function (value) { return parseInt(value, 10); }
 });
 
 args.createOption(["-d", "--descending"], {
     hasValue: false,
+    transform: function (value) { return value === "true" || value === 1; }
 });
 
 // Operands are statements without options.
@@ -81,7 +70,7 @@ args.parse(process.argv.slice(2), function (errors, options) {
     if (errors) { return console.log(errors[0]); }
 
     // Various useful ways to get the values from the options.
-    const order = options["-o"].value;
+    const order = options["--order"].value;
     const descending = options["--descending"].isSet;
 
     const commaPath = options.commaFile;
@@ -114,6 +103,17 @@ args.parse(process.argv.slice(2), function (errors, options) {
       );
 
     const addProps = props => obj => Object.assign({}, props,obj);
+    const formatDate = date => {
+        return (date.getMonth() + 1) +
+        "/" +  date.getDate() +
+        "/" +  date.getFullYear();
+    };
+
+    const normalize = record => {
+      const dob = record.dateofbirth;
+      const dateofbirth = formatDate(dob);
+      return Object.assign({}, record, {dateofbirth,})
+    }
 
     const sourceRows = result => {
       const {source, rows} = result;
@@ -123,14 +123,17 @@ args.parse(process.argv.slice(2), function (errors, options) {
       return sourcedRows;
     };
 
+    const orderer = parser.order(order, {descending});
     const combines = Promise.all(parsesAll).then((parseResults=[]) => {
       const rows = parseResults.reduce((flat, result) => flat.concat(sourceRows(result)), []);
-      rows['source']
       return rows;
     });
 
-    return combines.then(rows => {
-      console.log(format(rows));
-      console.log('skip count!', skipCount)
+    const orders = combines.then(orderer);
+    return orders.then(rows => {
+      console.log(format(rows.map(normalize)));
+      // console.log('skip count!', skipCount);
+      // console.log('order?', order);
+      // console.log('descending?', descending);
     });
 });

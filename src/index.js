@@ -2,6 +2,7 @@ import {read} from './read'
 import * as constants from './constants';
 const {delimiters, defaultDelimiter, columnTypes, defaultSkipCount} = constants;
 import {toPerson} from './transform';
+import {order} from './order';
 
 export const parse = (filename, options = {}) => {
   const {
@@ -16,17 +17,10 @@ export const parse = (filename, options = {}) => {
   return reads.then((lineCount) => rows.slice(skipCount));
 };
 
-export const print = (rows, {
-  delim = defaultDelimiter,
-  labels = columnLabels
-}) => {
-
-}
-
 export const parser = {
   parse,
-  print,
   constants,
+  order,
 };
 
 export default parser;

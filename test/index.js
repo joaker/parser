@@ -1,5 +1,5 @@
 import {parse, detect} from '../src';
-import dataWithHeader from "./files/short/data.json";
+import dataWithHeader from "./files/short/records";
 import {defaultSkipCount} from "../src/constants";
 const expectedData = dataWithHeader.slice(defaultSkipCount);
 import {expect} from 'chai';
