@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node ./parse.js ",
     "build": "./node_modules/.bin/webpack",
-    "test": "NODE_ENV=test ./node_modules/.bin/mocha --compilers js:babel-register --recursive"
+    "test": "NODE_ENV=test ./node_modules/.bin/mocha --compilers js:babel-register --recursive",
+    "postinstall": "echo 'bundling the app' && npm run build"
   },
   "keywords": [
     "parse",

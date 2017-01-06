@@ -12,6 +12,7 @@ Features:
 git clone https://github.com/joaker/parser
 cd parser
 npm i
+npm run build
 ```
 
 ### CLI commands
