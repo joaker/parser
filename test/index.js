@@ -9,7 +9,7 @@ describe('parse', function(){
   it('should parse a comma-delimited csv into an array', function() {
     const delimiter = ',';
     const fileToParse = path.join(__dirname, fileDir, 'commas.csv')
-    const parses = parse(fileToParse );
+    const parses = parse(fileToParse, {delimiter,} );
     return parses.then((result) => {
       expect(result).to.deep.equal(expectedData);
     });
@@ -17,17 +17,17 @@ describe('parse', function(){
   it('should parse a pipe-delimited csv into an array', function() {
     const delimiter = '|';
     const fileToParse = path.join(__dirname, fileDir, 'pipes.csv')
-    const readPromise = parse(fileToParse );
-    return readPromise.then((actualData) => {
-      expect().to.deep.equal(expectedData);
+    const readPromise = parse(fileToParse, {delimiter,} );
+    return readPromise.then((result) => {
+      expect(result).to.deep.equal(expectedData);
     });
   });
   it('should parse a space-delimited csv into an array', function() {
     const delimiter = ' ';
     const fileToParse = path.join(__dirname, fileDir, 'spaces.csv')
-    const readPromise = parse(fileToParse );
-    return readPromise.then((actualData) => {
-      expect(expectedData).to.deep.equal(jsonData);
+    const readPromise = parse(fileToParse, {delimiter,} );
+    return readPromise.then((result) => {
+      expect(result).to.deep.equal(expectedData);
     });
   });
 });
