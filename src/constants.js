@@ -7,6 +7,6 @@ export const columnTypes = {
   "gender": "string",
   "favoritecolor": "string",
   "dateofbirth": "date",
+  default: "string",
 };
-
 export const columnLabels = ["Last","First","Gender","FavoriteColor","DateOfBirth"];

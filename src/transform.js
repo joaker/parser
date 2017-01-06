@@ -4,13 +4,29 @@ import {
   columnTypes,
   columnLabels
 } from './constants';
+import {getConverter} from './converters';
 
 export const separator = (delim = defaultDelimiter) => input => {
   if(!input) return [];
   const parts = input.split(delim);
   return parts;
 };
-export const convertType = arg => input => {/* TODO implement */};
+
+export const convertType = uncasedToType => {
+  const conversions = Object.keys(uncasedToType).reduce((partial, uncased) => {
+    const label = uncased.toLowerCase();
+    const converter = getConverter(label);
+    partial[label] = converter;
+    return partial;
+  }, {});
+  console.log('conversion keys: ', Object.keys(conversions))
+  return values => Object.keys(values).reduce((partial, label) => {
+    const converter = conversions[label];
+    const converted = converter(values[label]);
+    partial[label] = converted;
+    return partial;
+  }, {});
+};
 
 // zip two arrays into an object
 export const labeler = (casedLabels = columnLabels) => {
