@@ -12,14 +12,13 @@ export const separator = (delim = defaultDelimiter) => input => {
   return parts;
 };
 
-export const convertType = uncasedToType => {
+export const convertType = (uncasedToType=columnTypes) => {
   const conversions = Object.keys(uncasedToType).reduce((partial, uncased) => {
     const label = uncased.toLowerCase();
     const converter = getConverter(label);
     partial[label] = converter;
     return partial;
   }, {});
-  console.log('conversion keys: ', Object.keys(conversions))
   return values => Object.keys(values).reduce((partial, label) => {
     const converter = conversions[label];
     const converted = converter(values[label]);

@@ -1,6 +1,5 @@
 const fs = require('fs');
 
-
 export const read = (filename, onRecord = x => x, transformer = x => x) => {
 
   return new Promise((res, rej) => {
