@@ -1,5 +1,7 @@
 #!/usr/bin/node
 
+const isDebugging = process.env.NOD_ENV === "developement";
+
 const modulePath = './dist/index.js';
 var module = require(modulePath);
 var format = require('json-format');
@@ -115,7 +117,8 @@ args.parse(process.argv.slice(2), function (errors, options) {
 
     const sourceRows = result => {
       const {source, rows} = result;
-      const addSource = addProps({source,});
+      const propsToAdd = isDebugging ? {source,} : {};
+      const addSource = addProps();
       const sourcedRows =  rows.map(row => addSource(row));
       return sourcedRows;
     };
