@@ -14,8 +14,8 @@ describe('read', function(){
     });
   });
 
-  it('should read 101 lines', function() {
-    const expectedReadCount = 101;
+  it('should read 20 lines', function() {
+    const expectedReadCount = 21;
     const fileToRead = path.join(__dirname, fileDir, 'pipes.csv')
     const readPromise = read(fileToRead);
     return readPromise.then((readCount) => {
