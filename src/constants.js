@@ -1,5 +1,7 @@
-export const delimiters = [',', '|', ' '];
-export const defaultDelimiter = delimiters[0];
+export const delimiters = ['|', ',', ' '];
+export const defaultDelimiter = ',';
+export const defaultOrder = 'last';
+export const defaultSkipCount = 1;
 
 export const columnTypes = {
   "last": "string",
@@ -9,4 +11,5 @@ export const columnTypes = {
   "dateofbirth": "date",
   default: "string",
 };
-export const columnLabels = ["Last","First","Gender","FavoriteColor","DateOfBirth"];
+export const columnNames = ["Last","First","Gender","FavoriteColor","DateOfBirth"];
+export const columnLabels = columnNames.map(n => n.toLowerCase());

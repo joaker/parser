@@ -1,5 +1,19 @@
-export const date = x => new Date(x);
-export const noop = x => x;
+
+const format = date => {
+    return (date.getMonth() + 1) +
+    "/" +  date.getDate() +
+    "/" +  date.getFullYear();
+};
+
+
+export const date = {
+  toString: x => x ? format(x) : "",
+  fromString: x => new Date(x),
+}
+export const noop = {
+  toString: x => x,
+  fromString: x => x,
+};
 
 export const converters = {
   dateofbirth: date,

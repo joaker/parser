@@ -21,7 +21,7 @@ export const convertType = (uncasedToType=columnTypes) => {
   }, {});
   return values => Object.keys(values).reduce((partial, label) => {
     const converter = conversions[label];
-    const converted = converter(values[label]);
+    const converted = converter.fromString(values[label]);
     partial[label] = converted;
     return partial;
   }, {});

@@ -9,7 +9,9 @@ module.exports = {
   entry: {
     index: indexEntry,
   },
+  target: 'node',
   output: {
+    libraryTarget: "commonjs",
     path: path.join(__dirname, 'dist'),
     publicPath: '/',
     filename: '[name].js'
