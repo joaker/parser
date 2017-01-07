@@ -1,56 +1,55 @@
 const Router = require('koa-router');
 const koaBody = require('koa-body')();
 const throwError = require('../util/error').throwError;
+
+const handlers = require('./handlers');
+
 // POST /records - Post a single data line in any of the 3 formats supported by your existing code
 // GET /records/gender - returns records sorted by gender
 // GET /records/birthdate - returns records sorted by birthdate
 // GET /records/name - returns records sorted by name
+
 const router = new Router();
-const defaults = {order: 'last', descending: false};
+const defaultParams = {order: 'last'};
+const descendingValues = [true, 'true', 'descending'];
+
 router
   .get(
-    'list',
-    '/:order/:descending',
-    function *(next) {
-      console.log('Hello, get');
-      console.log('params: ', this.params);
-      const defaultedParams = Object.assign({}, defaults, this.params);
-      console.log('params (defaulted): ', defaultedParams);
-      this.body = {
-        method: 'get',
-        url: this.url,
-        params: defaultedParams,
-      };
-      yield next;
-    });
+    'list', '/:order',
+    handlers.get
+  );
+
+const getWithLast = router.url('list', { order: 'last' });
+
+console.log('GET with LAST REGISTERED:', getWithLast );
+
+// // no chosen column?  Set one and keep going
+
+const fromHomeRedirect = `/records${getWithLast}`;
+console.log('LAST ROUTE REGISTERED:', fromHomeRedirect);
+router.redirect('/', fromHomeRedirect);
+// router.get('/', function *() {
+//
+//   console.log('LAST ROUTE:', getRedirect);
+//   console.log('handling record request...', params, query);
+//
+//   this.redirect(getRedirect);
+//   this.status = 301;
+// });
+
 router
   .post(
     'create',
     '/',
     koaBody,
-    function *(next) {
-      try {
-        const body = this.request.body;
-        this.status = 200;
-        throw Error('Not Implemented');
-        this.body = {success: true, };
-      }catch(e){
-        this.body = {success: false, };
-      }
-    });
+    handlers.create
+  );
 
 router
   .del(
     'delete',
     '/:index',
-    function *(next) {
-      const index = this.params.index || -1;
-      if(index>=0){
-        throwError(this, 'not implemented');
-        yield next;
-      } else {
-        throwError(this, 'record of index ('+index+') not found', 400);
-      }
-    });
+    handlers.del
+  );
 
 module.exports = router;
