@@ -29,6 +29,6 @@ $ node cli.js --order dateofbirth --descending ./samples/commas.csv ./samples/pi
 ```
 
 There is also an npm script, for convenience:
-```
-npm run cli -- --order dateofbirth --descending ./samples/commas.csv ./samples/pipes.csv ./samples/spaces.csv
+```sh
+$ npm run cli -- --order dateofbirth --descending ./samples/commas.csv ./samples/pipes.csv ./samples/spaces.csv
 ```
