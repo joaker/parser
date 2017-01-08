@@ -1,13 +1,24 @@
 const koa = require('koa');
 
-const createServer = (initialRecords = []) => {
+const isDevelopment = process.env.NODE_ENV === 'development';
+const samplesWithHeader = require('../../samples/records.js');
+const samplesNoHeader = samplesWithHeader.slice(1);
+const defaultRecords = isDevelopment ? samplesNoHeader : [];
+
+
+const createServer = (initialRecords = defaultRecords) => {
   let records = initialRecords;
   const app = koa();
 
-  const isDevelopment = process.env.NODE_ENV === 'development';
+  // console.log('creating a server with ',records.length,' records')
+
   const pretty = !!isDevelopment;
 
-  app.use(require('./middleware/init')(initialRecords));
+  app.use(require('./middleware/init')(records));
+
+  // parse the body, and validate it
+  app.use(require('koa-body')());
+  app.use(require('koa-validation')());
 
   // Make writing a json api just easier
   app.use(require('koa-json')({pretty,}));

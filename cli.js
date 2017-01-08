@@ -9,6 +9,7 @@ var parser = module.parser;
 var constants = parser.constants;
 var columnLabels = constants.columnLabels;
 var delimiters = constants.delimiters;
+var normalize = require('./src/utils').normalize;
 
 var pap = require("posix-argv-parser");
 var args = pap.create();
@@ -103,17 +104,7 @@ args.parse(process.argv.slice(2), function (errors, options) {
       );
 
     const addProps = props => obj => Object.assign({}, props,obj);
-    const formatDate = date => {
-        return (date.getMonth() + 1) +
-        "/" +  date.getDate() +
-        "/" +  date.getFullYear();
-    };
 
-    const normalize = record => {
-      const dob = record.dateofbirth;
-      const dateofbirth = formatDate(dob);
-      return Object.assign({}, record, {dateofbirth,})
-    }
 
     const sourceRows = result => {
       const {source, rows} = result;

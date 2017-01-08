@@ -1,7 +1,9 @@
 const Router = require('koa-router');
-const koaBody = require('koa-body')();
+// const koaBody = require('koa-body')();
 const throwError = require('../util/error').throwError;
+// const validate = require('koa-validation');
 
+const validators = require('./handlers/validators');
 const handlers = require('./handlers');
 
 // POST /records - Post a single data line in any of the 3 formats supported by your existing code
@@ -10,8 +12,7 @@ const handlers = require('./handlers');
 // GET /records/name - returns records sorted by name
 
 const router = new Router();
-const defaultParams = {order: 'last'};
-const descendingValues = [true, 'true', 'descending'];
+const defaultParams = {order: 'name'};
 
 router
   .get(
@@ -19,29 +20,19 @@ router
     handlers.get
   );
 
-const getWithLast = router.url('list', { order: 'last' });
+// no chosen column?  Set one and keep going
+router.get('default', '/', function *() {
 
-console.log('GET with LAST REGISTERED:', getWithLast );
-
-// // no chosen column?  Set one and keep going
-
-const fromHomeRedirect = `/records${getWithLast}`;
-console.log('LAST ROUTE REGISTERED:', fromHomeRedirect);
-router.redirect('/', fromHomeRedirect);
-// router.get('/', function *() {
-//
-//   console.log('LAST ROUTE:', getRedirect);
-//   console.log('handling record request...', params, query);
-//
-//   this.redirect(getRedirect);
-//   this.status = 301;
-// });
+  const target = router.url('list', {order: 'name'});
+  this.redirect(target);
+  this.status = 301;
+});
 
 router
   .post(
     'create',
     '/',
-    koaBody,
+    validators.create,
     handlers.create
   );
 

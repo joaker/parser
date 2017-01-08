@@ -1,31 +1,75 @@
+const _ = require('lodash');
+const utils = require('../../../utils');
+const normalize = utils.normalize;
 
+const defaultOrder = 'name';
+const descendingValues = [true, 'true', 'descending'];
+
+const orderingColumns = {
+  name: ['last', 'first'],
+  last: ['last'],
+  last: ['first'],
+  gender: ['gender'],
+  date: ['dateofbirth'],
+  dateofbirth: ['dateofbirth'],
+};
 
 
 function* get(next) {
-  const params = this.params;
-  const query = this.query;
-  console.log('handling record request...', params, query);
-  const url = this.url;
-  this.body = {
-    method: 'get',
-    url,
-    params,
-    query,
-  };
+  try {
+    const order = this.params.order || defaultOrder;
+    const descending = this.query.descending && descendingValues.some(v => v === this.query.descending);
+
+    const ordering = orderingColumns[order];
+    const direction = descending ? 'desc' : 'asc';
+    const directions = ordering.map(o => direction);
+
+    const orderedRecords = _.orderBy(this.records, ordering, directions);
+    const displayRecords = orderedRecords.map(normalize);
+
+    this.body = {
+      success:true,
+      data: displayRecords,
+    };
+  } catch (e) {
+    this.status = 504;
+    const message = 'ERROR: ' + e.message;
+    this.body = {
+      message,
+      stack: e.stack,
+      method: 'get',
+      url: this.url,
+      params: this.params,
+      query: this.query,
+    };
+  }
   yield next;
 }
 
 
 function* create(next) {
+  if (this.validationErrors) { // do we have validation errors?  Get out of town
+    console.log('bad request - has validation errors:', this.validationErrors);
+    this.status = 422;
+    this.body = this.validationErrors;
+    return;
+  }
+
   try {
     const order = this.params.order;
     const descending = descendingValues.some(v => v === this.query.descending);
 
-    console.log(`record request for<order, descending>: <${order},${descending}>`)
-
     const body = this.request.body;
+
+
+    // TODO - bring the 'transform' utility into the mix.  But for expediency, the json is close
+
+    const person = Object.assign({}, body, {dateofbirth: new Date(body.dateofbirth)});
+
+//todo
+    this.records.push(person);
+
     this.status = 200;
-    throw Error('Not Implemented');
     this.body = {success: true, };
   }catch(e){
     this.body = {success: false, };
