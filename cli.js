@@ -1,6 +1,6 @@
 #!/usr/bin/node
 
-const isDebugging = process.env.NOD_ENV === "developement";
+const isDebugging = process.env.NOD_ENV === 'developement';
 
 const modulePath = './dist/index.js';
 var module = require(modulePath);
@@ -11,7 +11,10 @@ var columnLabels = constants.columnLabels;
 var delimiters = constants.delimiters;
 var normalize = require('./src/utils').normalize;
 
-var pap = require("posix-argv-parser");
+var anyColumn = columnLabels.join('|');
+
+var pap = require('posix-argv-parser');
+var _ = require('lodash');
 var args = pap.create();
 var v = pap.validators;
 
@@ -30,24 +33,26 @@ function createEnumerableValidator(values) {
   }
 }
 
-args.createOption(["-s", "--skip-count"], {
+args.createOption(['-s', '--skip-count'], {
     // All options are optional
 
     // Implies hasValue: true, which allows parser to read -p2345 as -p=2345
     defaultValue: '1',
-    description: 'lines to skip before reading.\nBy default, one line is skipped for the header',
-    validators: [v.integer("Custom message. ${1} must be a number.")],
+    description: 'lines to skip before reading. By default, one line is skipped for the header',
+    validators: [v.integer('Custom message. ${1} must be a number.')],
     transform: function (value) { return parseInt(value, 10); }
 });
 
-args.createOption(["-o", "--order"], {
+args.createOption(['-o', '--order'], {
     defaultValue: 'last',
+    description: `the column to order to output by. One of: (${anyColumn})`,
     validators: [createEnumerableValidator(columnLabels)],
 });
 
-args.createOption(["-d", "--descending"], {
+args.createOption(['-d', '--descending'], {
     hasValue: false,
-    transform: function (value) { return value === "true" || value === 1; }
+    description: 'switches the output\'s sort direction from the default ascending direction',
+    transform: function (value) { return value === 'true' || value === 1; }
 });
 
 // Operands are statements without options.
@@ -55,7 +60,8 @@ args.createOption(["-d", "--descending"], {
 function registerInputFile(name){
   args.createOperand(`${name}File`, {
     // Used in error msgs
-    signature: `${name}-delimited csv file`,
+    signature: `${name}-delimited.csv`,
+    description: `(required) a csv file separated by ${name}s`,
     // Both will use default error messages
     validators: [v.file(), v.required()]
   });
@@ -67,18 +73,64 @@ for(var delim of inputs) {
   registerInputFile(delim);
 }
 
+// Register a help option.  The help option causes itself to be printed
+args.createOption(['-h', '--help'], { description: 'Show this text' });
+
+function getHelpMessages() {
+
+  var optionMessages = args.options.map(function (opt) {
+    var message = `  ${opt.signature}:\n\t${opt.description}`;
+    return message;
+  });
+
+  const helpMessages = [
+    helpIntro,
+    '\n',
+    'Options:',
+  ].concat(optionMessages);
+
+  return helpMessages;
+}
+
+function pushInto(recipient, provider){
+  Array.prototype.push.apply(recipient, provider);
+}
+
+const helpIntro =
+[
+  'CLI Parser - github.com/joaker/parser\n ',
+  'Usage:',
+  '  npm run cli -- [options] <commaFile.csv> <pipeFile.csv> <spaceFile.csv>',
+  'Example:',
+  '  $ npm run cli -- --order dateofbirth --descending ./samples/commas.csv ./samples/pipes.csv ./samples/spaces.csv'
+]
+.join('\n');
+
 args.parse(process.argv.slice(2), function (errors, options) {
-    if (errors) { return console.log(errors[0]); }
+
+    var allOptions = args.options;
+
+    var exitMessages = [];
+    var helpRequested = _.get(options, '--help.isSet');
+
+    var showHelp = errors || helpRequested;
+
+    if (errors) { pushInto(exitMessages, errors.map(e => `ERROR: ${e}\n`)); } // push the error messages into the exit messages
+    if (showHelp) { pushInto(exitMessages, getHelpMessages()); } // If there is a help flag in the command, print each option
+
+    // Print each exit message that exists, and exit if any were printed
+    if(exitMessages.length) { return exitMessages.concat('\n\n').forEach(message => console.log(message)); }
+
 
     // Various useful ways to get the values from the options.
-    const order = options["--order"].value;
-    const descending = options["--descending"].isSet;
+    const order = options['--order'].value;
+    const descending = options['--descending'].isSet;
 
     const commaPath = options.commaFile;
     const pipePath = options.pipeFile;
     const spacePath = options.spaceFile;
 
-    const skipCount = options["--skip-count"].value;
+    const skipCount = options['--skip-count'].value;
 
     const targets = [{
       delimiter: ',',
