@@ -13,6 +13,11 @@ const data = [
   {"last":"Carey","first":"Alma","gender":"male","favoritecolor":"green","dateofbirth":"08/25/2017"},
 ];
 
+const lines = {
+  comma: "Smith,John,male,green,04/02/1942",
+  pipe: "Smith|John|male|green|04/02/1942",
+  space: "Smith John male green 04/02/1942",
+};
 const aDatum = {"last":"Smith","first":"John","gender":"male","favoritecolor":"green","dateofbirth":"04/02/1942"};
 const increasedData = data.slice().concat(aDatum);
 const iDataByName = _.orderBy(increasedData, ['last', 'first'], ['asc', 'asc']);
@@ -51,7 +56,6 @@ let app;
 let request;
 describe('API - ', function() {
   beforeEach(function() {
-    // console.log('injecting ', records.length, ' records')
     app = require('../../src/server/createServer')(records.slice());
     request = require('co-supertest').agent(app.listen());
   });
@@ -67,7 +71,6 @@ describe('API - ', function() {
 
   describe(`${base} GET`, function() {
     it('should redirect', function *(){
-      console.log(`sending: ${JSON.stringify(aDatum)}`)
       const res = yield request
         .get(base)
         .expect(301)
@@ -113,11 +116,75 @@ describe('API - ', function() {
     });
   });
 
+
+  const toQueryString = (options={}) => {
+    const parts = Object.keys(options).map(o => {
+      const queryParam = `${o}=${options[o]}`;
+      return queryParam;
+    }).filter(x => x);
+    const parameters = parts.join('&');
+    if(!parameters.length){
+      return "";
+    }
+    const queryString = `?${parameters}`;
+    return queryString;
+  };
+
+  const postRecord = (data, params) => (desiredResponse = 200) => {
+    const queryString = toQueryString(params);
+    const encodedQuery = encodeURIComponent(queryString);
+    return request
+      .post(`${base}${queryString}`)
+      .send(data)
+      .expect(desiredResponse)
+      .end();
+  };
+
   describe(`${base} POST`, function() {
-    it('should allow a record to be posted', function *(){
-      console.log(`sending: ${JSON.stringify(aDatum)}`)
+    it('should create from a comma-delimited line', function*() {
+      const params = {delimiter: 'comma'};
+      let res = yield postRecord(lines.comma, params)();
+
+      expect(res.body).to.deep.equal({success: true});
+      res = yield request.get(`${base}/name`).expect(200).end();
+      expect(res.body).to.deep.equal({success: true, data: iDataByName});
+    });
+
+    it('should create from a pipe-delimited line', function*() {
+      const params = {delimiter: 'pipe'};
+      let res = yield postRecord(lines.pipe, params)();
+
+      expect(res.body).to.deep.equal({success: true});
+      res = yield request.get(`${base}/name`).expect(200).end();
+      expect(res.body).to.deep.equal({success: true, data: iDataByName});
+    });
+
+    it('should create from a space-delimited line', function*() {
+      const params = {delimiter: 'space'};
+      let res = yield postRecord(lines.space, params)();
+
+      expect(res.body).to.deep.equal({success: true});
+      res = yield request.get(`${base}/name`).expect(200).end();
+      expect(res.body).to.deep.equal({success: true, data: iDataByName});
+    });
+
+    it('should create from a comma-delimited line by default', function*() {
+      const params = {};
+      let res = yield postRecord(lines.comma, params)();
+
+      expect(res.body).to.deep.equal({success: true});
+      res = yield request.get(`${base}/name`).expect(200).end();
+      expect(res.body).to.deep.equal({success: true, data: iDataByName});
+    });
+  });
+
+
+
+
+  describe(`${base}/json POST`, function() {
+    it('should allow a record to be posted with JSON', function *(){
       const res = yield request
-        .post(base)
+        .post(`${base}/json`)
         .send(aDatum)
         .expect(200)
         .end();
@@ -126,10 +193,9 @@ describe('API - ', function() {
       expect(res.body).to.deep.equal({success: true});
     });
 
-    it('can get the posted record afterwards', function *(){
-      console.log(`sending: ${JSON.stringify(aDatum)}`)
+    it('can get the posted JSON record afterwards', function *(){
       let res = yield request
-        .post(base)
+        .post(`${base}/json`)
         .send(aDatum)
         .expect(200)
         .end();
@@ -145,7 +211,5 @@ describe('API - ', function() {
     });
 
   });
-
-
 
 });

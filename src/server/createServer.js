@@ -10,8 +10,6 @@ const createServer = (initialRecords = defaultRecords) => {
   let records = initialRecords;
   const app = koa();
 
-  // console.log('creating a server with ',records.length,' records')
-
   const pretty = !!isDevelopment;
 
   app.use(require('./middleware/init')(records));

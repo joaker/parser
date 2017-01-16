@@ -175,8 +175,5 @@ args.parse(process.argv.slice(2), function (errors, options) {
     const orders = combines.then(orderer);
     return orders.then(rows => {
       console.log(format(rows.map(normalize)));
-      // console.log('skip count!', skipCount);
-      // console.log('order?', order);
-      // console.log('descending?', descending);
     });
 });

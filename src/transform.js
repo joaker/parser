@@ -43,11 +43,16 @@ export const composeTransforms = (...transforms) => input => {
   return result;
 };
 
+export const toObject = (delim = defaultDelimiter) => composeTransforms(
+  separator(delim),
+  labeler()
+);
+
+
 export const toPerson = (delim = defaultDelimiter) => composeTransforms(
   separator(delim),
   labeler(),
-  convertType(),
-  composeTransforms()
+  convertType()
 );
 
 export default toPerson;

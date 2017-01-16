@@ -1,6 +1,12 @@
 const _ = require('lodash');
 const utils = require('../../../utils');
 const normalize = utils.normalize;
+const toObject = require('../../../transform').toObject;
+
+// // parse the body, and validate it
+// const koaBody = require('koa-body')();
+// const koaValidation = require('koa-validation')();
+
 
 const defaultOrder = 'name';
 const descendingValues = [true, 'true', 'descending'];
@@ -12,6 +18,20 @@ const orderingColumns = {
   gender: ['gender'],
   date: ['dateofbirth'],
   dateofbirth: ['dateofbirth'],
+};
+
+const delimiters = {
+  comma: ',',
+  commas: ',',
+  ',': ',',
+
+  pipe: '|',
+  pipes: '|',
+  '|': '|',
+
+  space: ' ',
+  spaces: ' ',
+  ' ': ' ',
 };
 
 
@@ -46,8 +66,7 @@ function* get(next) {
   yield next;
 }
 
-
-function* create(next) {
+function* create (next) {
   if (this.validationErrors) { // do we have validation errors?  Get out of town
     console.log('bad request - has validation errors:', this.validationErrors);
     this.status = 422;
@@ -58,7 +77,6 @@ function* create(next) {
   try {
     const order = this.params.order;
     const descending = descendingValues.some(v => v === this.query.descending);
-
     const body = this.request.body;
 
 
@@ -76,6 +94,34 @@ function* create(next) {
   }
 }
 
+
+const defaultDelimiter = ',';
+const getLine = body => {
+  const line = Object.keys(body)[0];
+  return line;
+}
+
+function* parseLine(next) {
+  
+  const delimiterName = (this.query || {}).delimiter;
+  const delimiter = delimiters[delimiterName] || defaultDelimiter;
+  const body = getLine(this.request.body);
+  let jsonBody;
+
+  try{
+    const transform = toObject(delimiter);
+    const nextBody = transform(body);
+    this.request.body = nextBody;//JSON.stringify(nextBody); // replace the actual request with the JSON-format request
+  }catch(e){
+    console.log('An ERROR occurred: ', e.message, e)
+    this.status = 422;
+    this.body = 'input is malformed';
+    return;
+  }
+
+  yield next;
+}
+
 function* del (next) {
   const index = this.params.index || -1;
   if(index>=0){
@@ -89,5 +135,6 @@ function* del (next) {
 module.exports = {
   get,
   create,
+  parseLine,
   del,
 };
