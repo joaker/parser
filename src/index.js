@@ -1,7 +1,7 @@
 import {read} from './read'
 import * as constants from './constants';
 const {delimiters, defaultDelimiter, columnTypes, defaultSkipCount} = constants;
-import {toPerson} from './transform';
+import {toPerson, toObject} from './transform';
 import {order} from './order';
 
 export const parse = (filename, options = {}) => {
@@ -21,6 +21,7 @@ export const parser = {
   parse,
   constants,
   order,
+  toObject,
 };
 
 export default parser;

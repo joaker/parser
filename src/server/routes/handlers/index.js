@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const utils = require('../../../utils');
 const normalize = utils.normalize;
-const toObject = require('../../../transform').toObject;
+const toObject = require('../../../../dist').toObject;
 
 // // parse the body, and validate it
 // const koaBody = require('koa-body')();
@@ -102,7 +102,7 @@ const getLine = body => {
 }
 
 function* parseLine(next) {
-  
+
   const delimiterName = (this.query || {}).delimiter;
   const delimiter = delimiters[delimiterName] || defaultDelimiter;
   const body = getLine(this.request.body);
